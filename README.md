@@ -1,96 +1,76 @@
-# AI Wordle Solver
+# 🧠 Arabic–English Wordle AI Solver
 
-This project implements four AI-driven approaches to solve Wordle puzzles efficiently. The strategies include:
+A **bilingual AI-powered Wordle solver** supporting **English and Arabic**, built to compare and evaluate multiple intelligent decision-making strategies.
 
-- **Constraint Satisfaction Problem (CSP)**
-- **Letter Frequency Analysis**
-- **Bayesian Updating**
-- **Entropy Maximization**
-
-The goal is to determine the most effective method for solving Wordle with minimal attempts while ensuring computational efficiency.
+This project explores how different AI techniques perform when solving Wordle-like games, with a strong focus on **information theory, probabilistic reasoning, and constraint satisfaction** — all wrapped in a playable application.
 
 ---
 
-## Performance Insights 🏆
+## 🚀 Key Features
 
-### **Entropy Maximization Agent**
-- **Win Rate**: 100%
-- **Average Guesses per Win**: 3.92 
-- **Average Time per Game**: 6.47s
+- 🌍 **Bilingual Support**: English & Arabic Wordle
+- 🤖 **Four AI Agents**:
+  - Constraint Satisfaction (CSP)
+  - Letter Frequency Heuristics
+  - Bayesian Updating
+  - Entropy Maximization (Information Gain)
+- 📊 **Performance Evaluation**: Win rate, guess efficiency, and runtime
+- 🧪 **Agent-vs-Agent & Human Comparison**
+- ⚡ Optimized with caching for entropy computations
 
-### **Frequency Heuristic Agent**
-- **Win Rate**: 95.63%
-- **Average Guesses per Win**: 4.04
-- **Average Time per Game**: 0.04s
+---
 
-### **CSP Agent**
-- **Win Rate**: 94.99%
-- **Average Guesses per Win**: 4.40
-- **Average Time per Game**: *0.03s*
+## 🖼️ Demo & Visuals
 
-### **Bayesian Agent**
-- **Win Rate**: 94.81%
-- **Average Guesses per Win**: 4.40
-- **Average Time per Game**: 0.52s 
+### 🔤 English Mode – AI Agent Comparison
+*Side-by-side comparison of AI agents solving English Wordle*
 
-## Prerequisites 🧰
+![English Agent Comparison](images/english_agents.png)
 
-Before running the project for the first time, make sure you have the required dependencies installed, and pre-computed data generated:
+---
 
-1. **Create a virtual environment** 🛠️:
+### 🧑‍💻 Arabic Mode – Playing Against the AI
+*Human player competing against the AI solver in Arabic Wordle*
 
-    - On **Windows**:
-        ```powershell
-        py -m venv .venv
-        ```
+![Arabic Human vs AI](images/arabic_vs_human.png)
 
-    - On **macOS/Linux**:
-        ```bash
-        python3 -m venv .venv
-        ```
+---
 
-    This command creates a `.venv` directory that holds a self-contained Python environment.
+### 🧪 Arabic Mode – AI Stress Testing
+*Testing AI robustness and decision-making in Arabic Wordle*
 
+![Arabic AI Testing](images/arabic_testing.png)
 
-2. **Activate the virtual environment** 🔑:
+---
 
-    Before you start using the app, you'll need to `activate` the virtual environment:
-    
-    - On **Windows**:
-    ```powershell
-    .venv\Scripts\activate
-    ```
-    - On **macOS/Linux**:
-    ```bash
-    source .venv/bin/activate
-    ```
+## 🏆 Performance Summary
 
-    > **Note 📝**: Closing your shell will deactivate the virtual environment. If you want to use the app again, `reactivate` the virtual environment by following the same activation procedure. There's no need to create a new virtual environment.
-    
-    **If you want to switch projects or leave your virtual environment, `deactivate` the environment:**
-    ```bash
-    deactivate
-    ```
-3. **Install dependencies** 📦:
+| Agent | Win Rate | Avg. Guesses | Avg. Time |
+|------|---------|--------------|-----------|
+| **Entropy Maximization** | **100%** | **3.92** | 6.47s |
+| Frequency Heuristic | 95.63% | 4.04 | 0.04s |
+| CSP | 94.99% | 4.40 | 0.03s |
+| Bayesian | 94.81% | 4.40 | 0.52s |
 
-    After creating and activating the virtual environment, you need to install the required dependencies for the project. *This step only needs to be done once.*
-    ```bash
-    pip install -r requirements.txt
-    ```
+> **Insight:**  
+> The Entropy agent consistently minimizes guesses by maximizing expected information gain, at the cost of higher computation time.
 
-4. **Pre-compute cache data for entropy agent to avoid potential crashes** ⚙️:  
-    >*This process may take a while.*
-    ```bash
-    python data/pre_compute.py
-    ```
-    **Note 📝**: This step is only required once, or if the `entropy_cache.json` file is missing or deleted from the `data` directory.
+---
 
-5. **Run the main application** 🚀
+## 🛠️ Tech Stack
 
-   To run the app:
+- Python
+- NumPy / Pandas
+- Probability & Information Theory
+- Constraint Solving
+- Custom Arabic word datasets
 
-    ```bash
-    python main/app.py
-    ```
+---
 
-For a detailed analysis of the agents and their performance, refer to the [Project Report](./reports/Project_Report.pdf) in the `reports` directory.
+## ⚙️ Setup & Installation
+
+### 1️⃣ Create a Virtual Environment
+
+**Windows**
+```powershell
+py -m venv .venv
