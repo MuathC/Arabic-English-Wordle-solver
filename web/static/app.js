@@ -60,6 +60,7 @@ const STRINGS = {
     game_not_found: "This game has expired. Start a new one.",
     network: "Can't reach the server",
     server_error: "Something went wrong. Try again.",
+    try_again: "Try again",
     fb_green: "correct",
     fb_yellow: "in the word, wrong spot",
     fb_grey: "not in the word",
@@ -110,6 +111,7 @@ const STRINGS = {
     game_not_found: "انتهت صلاحية هذه اللعبة. ابدأ لعبة جديدة.",
     network: "تعذّر الاتصال بالخادم",
     server_error: "حدث خطأ ما. حاول مرة أخرى.",
+    try_again: "حاول مرة أخرى",
     fb_green: "في المكان الصحيح",
     fb_yellow: "في الكلمة بمكان آخر",
     fb_grey: "ليست في الكلمة",
@@ -171,7 +173,13 @@ async function api(path, body) {
   } catch {
     throw new ApiError("network");
   }
-  const data = await response.json().catch(() => ({}));
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    // the body was cut off or isn't JSON: never hand callers an empty result
+    throw new ApiError(response.ok ? "network" : "server_error");
+  }
   if (!response.ok) throw new ApiError(data.error || "server_error");
   return data;
 }
@@ -355,8 +363,7 @@ async function submitGuess() {
   }
 }
 
-async function playAgent(play, id) {
-  const agent = state.agent;
+async function playAgent(play, id, agent = state.agent) {
   play.agentRun = { agent, thinking: true };
   try {
     const run = await api(`/api/games/${id}/agents/${agent}/solve`, {});
@@ -366,6 +373,14 @@ async function playAgent(play, id) {
     if (state.play !== play) return;
     play.agentRun = { agent, error: errorText(error) };
   }
+  renderPlay();
+}
+
+async function retryAgent() {
+  const play = state.play;
+  if (!play?.agentRun?.error) return;
+  // the server returns the finished run if the first attempt completed there
+  playAgent(play, await play.ready, play.agentRun.agent);
   renderPlay();
 }
 
@@ -438,6 +453,7 @@ function renderPlay() {
   renderBoard($("play-agent-board"), run?.guesses || [], { key: play.key });
   if (run) runNote($("play-agent-note"), run);
   else setNote($("play-agent-note"), t("agent_waits"));
+  $("agent-retry-row").hidden = !run?.error;
 
   let status = "";
   if (play.status !== "playing") {
@@ -628,6 +644,7 @@ function init() {
 
   $("new-game").addEventListener("click", newPlayGame);
   $("hint").addEventListener("click", getHint);
+  $("agent-retry").addEventListener("click", retryAgent);
   $("keyboard").addEventListener("click", (e) => {
     const key = e.target.closest(".key");
     if (key) onKey(key.dataset.key);
