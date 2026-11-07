@@ -372,16 +372,17 @@ async function getHint() {
   const play = state.play;
   if (!play || play.status !== "playing" || play.hint?.thinking) return;
   const agent = state.agent;
-  const asked = play.rows.length;
-  play.hint = { agent, thinking: true };
+  // A guess or an agent change replaces play.hint, so a late answer to this request is dropped.
+  const pending = { agent, thinking: true };
+  play.hint = pending;
   renderPlay();
   try {
     const id = await play.ready;
     const result = await api(`/api/games/${id}/hint`, { agent });
-    if (state.play !== play || play.rows.length !== asked) return;
+    if (state.play !== play || play.hint !== pending) return;
     play.hint = { agent, word: result.word };
   } catch (error) {
-    if (state.play !== play) return;
+    if (state.play !== play || play.hint !== pending) return;
     play.hint = null;
     toast(errorText(error));
   }
@@ -450,19 +451,22 @@ function renderPlay() {
 // ---------- test agent and comparison ----------
 
 async function startSecret(word) {
-  const mode = state.mode;
+  const { mode, lang } = state;
+  // Switching mode or language while this is pending makes the result stale.
+  const stale = () => state.mode !== mode || state.lang !== lang;
   const form = $("secret-form");
   form.querySelectorAll("button").forEach((b) => { b.disabled = true; });
   try {
-    if (!word) word = (await api(`/api/random-word?language=${state.lang}`)).word;
+    if (!word) word = (await api(`/api/random-word?language=${lang}`)).word;
+    if (stale()) return;
     const ready = createGame(word);
     await ready; // a typed word may not be in the list
-    if (state.mode !== mode) return;
+    if (stale()) return;
     if (mode === "test") startTest(word, ready);
     else startCompare(word, ready);
     $("secret-input").value = "";
   } catch (error) {
-    toast(errorText(error));
+    if (!stale()) toast(errorText(error));
   } finally {
     form.querySelectorAll("button").forEach((b) => { b.disabled = false; });
   }
