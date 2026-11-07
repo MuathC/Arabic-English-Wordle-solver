@@ -74,3 +74,33 @@ This project explores how different AI techniques perform when solving Wordle-li
 **Windows**
 ```powershell
 py -m venv .venv
+.venv\Scripts\activate
+```
+
+**macOS / Linux**
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 2️⃣ Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3️⃣ Run the App
+
+From the repository root:
+
+```bash
+python main/app.py
+```
+
+### 4️⃣ Run the Benchmark (Windows only)
+
+```bash
+python main/benchmark_exec.py
+```
+
+The benchmark keeps the PC awake during long runs through `ctypes.windll`, which only exists on Windows.
