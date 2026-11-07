@@ -339,7 +339,7 @@ async function submitGuess() {
   let failure = null;
   try {
     const id = await play.ready;
-    const result = await api(`/api/games/${id}/guess`, { word: play.typed });
+    const result = await api(`/api/games/${id}/guess`, { word: play.typed, row: play.rows.length });
     if (state.play !== play) return;
     Object.assign(play, { rows: result.guesses, status: result.status, answer: result.answer || null, typed: "", hint: null });
     if (play.status !== "playing") playAgent(play, id);

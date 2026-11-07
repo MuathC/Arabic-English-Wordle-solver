@@ -85,6 +85,25 @@ def test_player_loses_after_six_misses(client):
     assert response.json == {"error": "game_over"}
 
 
+def test_retried_guess_is_not_counted_twice(client):
+    game_id = new_game(client, "en", "crane")
+    first = client.post(f"/api/games/{game_id}/guess", json={"word": "slate", "row": 0}).json
+    retry = client.post(f"/api/games/{game_id}/guess", json={"word": "slate", "row": 0}).json
+    assert retry == first
+    assert len(retry["guesses"]) == 1
+
+
+def test_retried_final_guess_returns_the_result(client):
+    game_id = new_game(client, "en", "crane")
+    client.post(f"/api/games/{game_id}/guess", json={"word": "slate", "row": 0})
+    won = client.post(f"/api/games/{game_id}/guess", json={"word": "crane", "row": 1}).json
+    retry = client.post(f"/api/games/{game_id}/guess", json={"word": "crane", "row": 1})
+    assert retry.status_code == 200
+    assert retry.json == won and won["answer"] == "crane"
+    # a new guess after the game ended is still refused
+    assert client.post(f"/api/games/{game_id}/guess", json={"word": "slate", "row": 2}).status_code == 409
+
+
 def test_guess_is_validated(client):
     game_id = new_game(client)
     assert client.post(f"/api/games/{game_id}/guess", json={"word": "cra"}).json == {"error": "not_enough_letters"}
@@ -133,8 +152,9 @@ def test_agent_solves_the_same_word(client, agent, language):
     won = run["guesses"][-1]["word"] == secret
     assert run["status"] == ("won" if won else "lost")
 
-    again = client.post(f"/api/games/{game_id}/agents/{agent}/step")
-    assert again.status_code == 409
+    # a retry after a lost answer gets the finished board back, without playing on
+    for action in ("solve", "step"):
+        assert client.post(f"/api/games/{game_id}/agents/{agent}/{action}").json == run
 
 
 def test_agent_steps_one_guess_at_a_time(client):

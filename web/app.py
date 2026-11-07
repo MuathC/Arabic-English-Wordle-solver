@@ -47,7 +47,8 @@ def create_game():
 
 @app.post("/api/games/<game_id>/guess")
 def guess(game_id):
-    return jsonify(games.get_game(game_id).guess(json_body().get("word")))
+    body = json_body()
+    return jsonify(games.get_game(game_id).guess(body.get("word"), body.get("row")))
 
 
 @app.post("/api/games/<game_id>/hint")

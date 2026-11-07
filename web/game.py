@@ -122,8 +122,12 @@ class Game:
             state["answer"] = self.secret_word
         return state
 
-    def guess(self, word):
+    def guess(self, word, row=None):
+        """Record a guess. `row` is the board row the page is filling: if it is already
+        filled, the page is retrying a guess whose answer got lost, so return the board."""
         with self.lock:
+            if isinstance(row, int) and row < self.player.guess_count:
+                return self.player_state()
             if self.player.game_over:
                 raise GameError("game_over", 409)
             self.player.guess(check_word(word, self.language))
@@ -149,9 +153,9 @@ class Game:
             if run is None:
                 run = self.runs[agent_name] = AgentRun(agent_cls, self.language, self.secret_word)
         with run.lock:  # per run, so different agents on one game can think at the same time
-            if run.done:
-                raise GameError("game_over", 409)
-            run.step()
+            # A finished run just reports its board, so a retry after a lost answer still gets the result.
+            if not run.done:
+                run.step()
             while until_done and not run.done:
                 run.step()
             return run.state()
