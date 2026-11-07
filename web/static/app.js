@@ -142,6 +142,7 @@ const state = {
   compare: null,
 };
 let nextKey = 1;
+let navigation = 0; // bumped on every mode or language switch
 
 function t(key, vars = {}) {
   const text = STRINGS[state.lang][key] ?? STRINGS.en[key] ?? key;
@@ -452,8 +453,9 @@ function renderPlay() {
 
 async function startSecret(word) {
   const { mode, lang } = state;
-  // Switching mode or language while this is pending makes the result stale.
-  const stale = () => state.mode !== mode || state.lang !== lang;
+  // Switching mode or language while this is pending makes the result stale, even after switching back.
+  const started = navigation;
+  const stale = () => navigation !== started;
   const form = $("secret-form");
   form.querySelectorAll("button").forEach((b) => { b.disabled = true; });
   try {
@@ -584,7 +586,14 @@ function applyLanguage() {
   buildKeyboard();
 }
 
+function setMode(mode) {
+  if (mode !== state.mode) navigation++;
+  state.mode = mode;
+  render();
+}
+
 function setLanguage(lang) {
+  navigation++;
   state.lang = lang;
   save("lang", lang);
   // Word lists differ per language, so every mode starts over.
@@ -614,7 +623,7 @@ function init() {
   $("language").addEventListener("click", () => setLanguage(state.lang === "ar" ? "en" : "ar"));
   $("agent").addEventListener("change", (e) => setAgent(e.target.value));
   for (const button of document.querySelectorAll(".tabs button")) {
-    button.addEventListener("click", () => { state.mode = button.dataset.mode; render(); });
+    button.addEventListener("click", () => setMode(button.dataset.mode));
   }
 
   $("new-game").addEventListener("click", newPlayGame);
