@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wordle AI Solver</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1 data-i18n="title">WORDLE</h1>
+    <div class="controls">
+      <label class="agent-picker">
+        <span data-i18n="agent_label">Agent</span>
+        <select id="agent"></select>
+      </label>
+      <button id="language" class="pill" type="button" lang="ar">العربية</button>
+    </div>
+  </header>
+
+  <nav class="tabs" aria-label="Mode">
+    <button type="button" data-mode="play" data-i18n="mode_play">Play vs Agent</button>
+    <button type="button" data-mode="test" data-i18n="mode_test">Test Agent</button>
+    <button type="button" data-mode="compare" data-i18n="mode_comparison">Comparison</button>
+  </nav>
+
+  <main>
+    <section id="play-view">
+      <div class="boards pair">
+        <div class="board-card">
+          <h2 data-i18n="player">Player</h2>
+          <div class="board" id="player-board"></div>
+        </div>
+        <div class="board-card">
+          <h2 id="play-agent-title"></h2>
+          <div class="board" id="play-agent-board"></div>
+          <p class="note" id="play-agent-note"></p>
+        </div>
+      </div>
+      <p class="status" id="play-status" role="status"></p>
+      <div class="actions">
+        <button type="button" id="hint" class="secondary" data-i18n="hint">Hint</button>
+        <button type="button" id="new-game" class="secondary" data-i18n="reset">New game</button>
+      </div>
+      <p class="hint-line" id="hint-line" aria-live="polite"></p>
+      <div class="keyboard" id="keyboard"></div>
+    </section>
+
+    <section id="secret-section" hidden>
+      <form id="secret-form" class="secret-form">
+        <label for="secret-input" data-i18n="choose_secret">Choose a secret word option:</label>
+        <div class="secret-row">
+          <input id="secret-input" maxlength="5" autocomplete="off" spellcheck="false" data-i18n-placeholder="enter_word_prompt">
+          <button type="submit" data-i18n="enter_word_btn">Use this word</button>
+          <button type="button" id="random-word" class="secondary" data-i18n="random_word_btn">Random word</button>
+        </div>
+      </form>
+      <div id="secret-bar" class="secret-bar" hidden>
+        <span id="secret-label"></span>
+        <button type="button" id="run-again" class="secondary" data-i18n="run_again">Run again</button>
+        <button type="button" id="change-word" class="secondary" data-i18n="new_word">New word</button>
+      </div>
+    </section>
+
+    <section id="test-view" hidden>
+      <div class="board-card single">
+        <h2 id="test-title"></h2>
+        <div class="board" id="test-board"></div>
+        <p class="note" id="test-note"></p>
+        <div class="actions">
+          <button type="button" id="next-guess" data-i18n="next_guess">Next guess</button>
+          <button type="button" id="solve" class="secondary" data-i18n="solve">Solve</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="compare-view" hidden>
+      <div class="boards quad" id="compare-boards"></div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="alert" hidden></div>
+</body>
+</html>
