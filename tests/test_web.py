@@ -126,16 +126,17 @@ def test_random_secret_is_not_revealed(client):
     assert set(response.json) == {"id", "language", "max_guesses"}
 
 
+@pytest.mark.parametrize("guess", ["slate", "geese"])  # "geese" has an "e" that is both grey and green
 @pytest.mark.parametrize("agent", list(games.AGENTS))
-def test_hint_fits_the_players_board(client, agent):
+def test_hint_fits_the_players_board(client, agent, guess):
     game_id = new_game(client, "en", "crane")
-    client.post(f"/api/games/{game_id}/guess", json={"word": "slate"})
+    client.post(f"/api/games/{game_id}/guess", json={"word": guess})
     response = client.post(f"/api/games/{game_id}/hint", json={"agent": agent})
     assert response.status_code == 200
     hint = response.json["word"]
-    assert hint in WORDS["en"] and hint != "slate"
+    assert hint in WORDS["en"] and hint != guess
     if agent != "Entropy":  # Entropy may probe with any word; the others pick from the remaining candidates
-        assert get_feedback("slate", hint) == get_feedback("slate", "crane")
+        assert get_feedback(guess, hint) == get_feedback(guess, "crane")
 
 
 @pytest.mark.parametrize("language", ["en", "ar"])

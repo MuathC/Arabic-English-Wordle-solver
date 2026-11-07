@@ -14,6 +14,7 @@ inconsistent with the feedback received.
 
 from agents.base_agent import BaseAgent
 from data.config import ALL_WORDS_ENGLISH,ALL_WORDS_ARABIC
+from env.wordle_env import get_feedback
 import random
 
 class FrequencyAgent(BaseAgent):
@@ -54,9 +55,9 @@ class FrequencyAgent(BaseAgent):
           2. Scoring each candidate by summing the frequency of its unique letters.
           3. Returning the candidate with the highest total score.
         """
-        # If no candidates remain, reset the candidate list.
+        # If no candidates remain, reset the candidate list (in the agent's own language).
         if not self.candidates:
-            self.candidates = ALL_WORDS_ARABIC
+            self.candidates = super().candidates(language=self.language)
 
         # Compute frequency of each letter across all candidate words.
         frequency = {}
@@ -101,13 +102,9 @@ class FrequencyAgent(BaseAgent):
         """
         Check if a candidate word is consistent with the feedback provided for a given guess.
 
-        This function implements a simplified version of feedback matching:
-          - For "green": the letter must match at that exact position.
-          - For "yellow": the letter must appear somewhere in the word, but not in that position.
-          - For "grey": the letter must not appear in the word at all.
-
-        Note: This simplified approach does not handle multiple occurrences of letters perfectly.
-        when you read this and have questions while I followed this approach across the project I can explain it then
+        The candidate fits if guessing `guess` against it would give exactly this feedback.
+        This handles repeated letters: in "geese" against "crane" the last "e" is green and the
+        other two are grey, which only means "crane" has no further "e", not that it has none.
 
         Args:
             word (str): A candidate word to test.
@@ -117,19 +114,7 @@ class FrequencyAgent(BaseAgent):
         Returns:
             bool: True if the candidate is consistent with the feedback; False otherwise.
         """
-        for i, (letter, fb) in enumerate(zip(guess, feedback)):
-            if fb == "green":
-                if word[i] != letter:
-                    return False
-            elif fb == "yellow":
-                # Letter must appear in the word but not at the same position.
-                if letter not in word or word[i] == letter:
-                    return False
-            elif fb == "grey":
-                # For simplicity, assume grey means the letter is not in the word at all.
-                if letter in word:
-                    return False
-        return True
+        return get_feedback(guess, word) == list(feedback)
     
     def __str__(self):
         return "Frequency"
