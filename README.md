@@ -64,6 +64,32 @@ This project explores how different AI techniques perform when solving Wordle-li
 - Probability & Information Theory
 - Constraint Solving
 - Custom Arabic word datasets
+- Flask + plain HTML/CSS/JavaScript for the web app
+
+---
+
+## 🌐 Web App
+
+The solver also runs in the browser, using the same agents and word lists as the desktop app:
+
+- **Play vs Agent**: guess the hidden word in English or Arabic (right-to-left). **Hint** asks the selected agent for its next guess on your board. When you finish, the agent plays the same word and the page says who did better.
+- **Test Agent**: pick a word (or a random one), then step through the agent's guesses with **Next guess** or let it **Solve**.
+- **Comparison**: all four agents solve the same word side by side, with their guess counts and time.
+
+From the repository root, after installing the requirements:
+
+```bash
+pip install -r requirements.txt
+python -m web.app
+```
+
+Then open http://127.0.0.1:8000 (set `PORT` to use another port). Games live in memory in a single Flask process, so restarting the server clears them. The Entropy agent can take several seconds per guess, mostly on its second guess in Arabic.
+
+Run the tests with:
+
+```bash
+python -m pytest
+```
 
 ---
 

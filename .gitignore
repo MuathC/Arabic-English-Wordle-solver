@@ -2,6 +2,8 @@
 .venv/
 venv/
 ENV/
+# keep the game package: on case-insensitive filesystems ENV/ also matches env/
+!env/
 
 # Python bytecode files
 *.pyc
